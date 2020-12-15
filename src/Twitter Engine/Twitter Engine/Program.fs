@@ -66,6 +66,23 @@ type LogoutUserResponse = {
     Success: bool;
 }
 
+type FollowUserRequest = {
+    FollowerId: int;
+    FolloweeId: int;
+}
+
+type FollowUserResponse = {
+    Success: bool;
+}
+
+type UnfollowUserRequest = {
+    FollowerId: int;
+    FolloweeId: int;
+}
+
+type UnfollowUserResponse = {
+    Success: bool;
+}
 
 // Models
 type User = {
@@ -165,6 +182,32 @@ let logoutUser =
     )
     >=> setMimeType "application/json"
 
+let followUser = 
+    request (fun r -> 
+        let req = r.rawForm |> getString |> fromJson<FollowUserRequest>
+        printfn "Follow request: %A" req
+        users.[req.FollowerId].FollowingTo.Add(req.FolloweeId) |> ignore
+        users.[req.FolloweeId].Followers.Add(req.FollowerId) |> ignore
+        for u in users do
+            printfn "%A" u
+        let res: FollowUserResponse = { Success = true; }
+        res |> JsonConvert.SerializeObject |> OK
+    )
+    >=> setMimeType "application/json"
+
+let unfollowUser = 
+    request (fun r -> 
+        let req = r.rawForm |> getString |> fromJson<UnfollowUserRequest>
+        printfn "Unfollow request: %A" req
+        users.[req.FollowerId].FollowingTo.Remove(req.FolloweeId) |> ignore
+        users.[req.FolloweeId].Followers.Remove(req.FollowerId) |> ignore
+        for u in users do
+            printfn "%A" u
+        let res: UnfollowUserResponse = { Success = true; }
+        res |> JsonConvert.SerializeObject |> OK
+    )
+    >=> setMimeType "application/json"
+
 
 // Routes
 let app : WebPart = 
@@ -173,6 +216,8 @@ let app : WebPart =
             path "/register" >=> registerUser
             path "/login" >=> loginUser
             path "/logout" >=> logoutUser
+            path "/follow" >=> followUser
+            path "/unfollow" >=> unfollowUser
         ]
 
         NOT_FOUND "Resource not found. 404!" ]
