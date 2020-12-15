@@ -24,7 +24,7 @@ let fromJson<'a> json =
     JsonConvert.DeserializeObject(json, typeof<'a>) :?> 'a
 
 
-// Type definitions
+// Type definitions for REST
 type RegisterUserRequest = {
     Handle: string;
     FirstName: string;
@@ -33,6 +33,23 @@ type RegisterUserRequest = {
 }
 
 type RegisterUserResponse = {
+    Success: bool;
+}
+
+type LoginUserRequest = {
+    Handle: string;
+    Password: string;
+}
+
+type LoginUserResponse = {
+    Success: bool;
+}
+
+type LogoutUserRequest = {
+    Handle: string;
+}
+
+type LogoutUserResponse = {
     Success: bool;
 }
 
@@ -102,12 +119,38 @@ let registerUser =
     )
     >=> setMimeType "application/json"
 
+let loginUser = 
+    request (fun r ->
+        let req = r.rawForm |> getString |> fromJson<LoginUserRequest>
+        printfn "Login request: %A" req
+        if handles.ContainsKey req.Handle && users.[handles.[req.Handle]].Password = req.Password then
+            userStatus.[handles.[req.Handle]] <- true
+            let res: LoginUserResponse = { Success = true; }
+            res |> JsonConvert.SerializeObject |> OK
+        else
+            let res: LoginUserResponse = { Success = false; }
+            res |> JsonConvert.SerializeObject |> OK
+    )
+    >=> setMimeType "application/json"
+
+let logoutUser = 
+    request (fun r ->
+        let req = r.rawForm |> getString |> fromJson<LogoutUserRequest>
+        printfn "Logout request: %A" req
+        userStatus.[handles.[req.Handle]] <- false
+        let res: LogoutUserResponse = { Success = true; }
+        res |> JsonConvert.SerializeObject |> OK
+    )
+    >=> setMimeType "application/json"
+
 
 // Routes
 let app : WebPart = 
     choose [
         POST >=> choose [
             path "/register" >=> registerUser
+            path "/login" >=> loginUser
+            path "/logout" >=> logoutUser
         ]
 
         NOT_FOUND "Resource not found. 404!" ]
