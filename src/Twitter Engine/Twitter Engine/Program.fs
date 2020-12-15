@@ -1,4 +1,5 @@
 ﻿open System.Collections.Generic
+open System.Text.RegularExpressions
 
 open Suave
 open Suave.Filters
@@ -16,12 +17,24 @@ open Suave.WebSocket
 open Newtonsoft.Json
 
 
+// Regex patterns
+let mentionPattern = @"@\w+"
+let hashtagPattern = @"#\w+"
+
+
 // Utility functions
 let getString (rawForm: byte[]) =
     System.Text.Encoding.UTF8.GetString(rawForm)
 
 let fromJson<'a> json =
     JsonConvert.DeserializeObject(json, typeof<'a>) :?> 'a
+
+let findAllMatches (text: string, regex: string, sep: string) = 
+    let ans = new HashSet<string>()
+    let matches = Regex.Matches(text, regex)
+    for m in matches do
+        ans.Add(m.Value) |> ignore
+    ans
 
 
 // Type definitions for REST
@@ -85,6 +98,15 @@ let userStatus = new Dictionary<int, bool>()
 
 // User Handle -> User Id mapping
 let handles = new Dictionary<string, int>()
+
+// User Id -> List<Tweet Id> mapping, for searching tweets where user is mentioned
+let mentions = new Dictionary<int, List<int>>()
+
+// Hashtag -> List<Tweet Id> mapping, for searching tweets having a specific hashtag
+let hashtags = new Dictionary<string, List<int>>()
+
+// Tweet Id -> Tweet Instance mapping
+let tweets = new Dictionary<int, Tweet>()
 
 
 // REST API functions
