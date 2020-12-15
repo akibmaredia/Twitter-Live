@@ -10,4 +10,9 @@
     <Compile Include="Program.fs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Suave" Version="2.6.0" />
+  </ItemGroup>
+
 </Project>
