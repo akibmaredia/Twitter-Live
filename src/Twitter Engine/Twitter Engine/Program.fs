@@ -130,9 +130,13 @@ module Postman = begin
         loop(Map.empty)
     end
 
-// Database
-// User Id -> WebSocket instance mapping
-let liveConnections = new Dictionary<int, WebSocket>()
+    let private inbox = MailboxProcessor.Start(startMailbox)
+    
+    let AddConnection(id, ws) = inbox.Post(AddConnection(id, ws))
+    
+    let Publish(userIds, messages) = inbox.Post(Publish(userIds, messages))
+end
+
 
 // User Id -> User Instance mapping
 let users = new Dictionary<int, User>()
