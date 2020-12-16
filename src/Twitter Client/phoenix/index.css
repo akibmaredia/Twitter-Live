@@ -71,22 +71,22 @@
 
 .home-page-left-pane {
     text-align: left;
-    margin: 2%;
-    padding-left: 1%;
-    padding-right: 1%;
-    background: -webkit-linear-gradient(left, #e2e3e6, #f3eef5);
     color: #333;
     line-height: 480px;
 }
 
 .home-page-right-pane {
     text-align: left;
-    margin: 2%;
-    padding-left: 4%;
-    padding-right: 4%;
-    background: -webkit-linear-gradient(left, #c4d0f5, #abbbf0);
+    margin-left: 2%;
     color: #333;
     line-height: 480px;
+}
+
+.home-page-content {
+    background: -webkit-linear-gradient(left, #bc9bcc, #9fbbdf);
+    padding: 4%;
+    margin: 0.1%;
+    height: 600px;
 }
 
 .column {
@@ -131,20 +131,22 @@
     display: flex;
     justify-content: flex-start;
     border-bottom: solid rgba(255, 255, 255, 0.1) 10px;
-  }
+}
+
 .tweet-input {
     width: 100%;
     /* height: 100%; */
     display: block;
     margin-bottom: 5px;
 }
+
 .input {
     padding: 0 8px;
 }
+
 .input textarea {
     resize: none;
     width: 100%;
-    height: ;
     margin: 12px 0;
     display: block;
     font-size: 19px;
@@ -152,4 +154,21 @@
     color: var(--dark-theme-color);
     background-color: var(--dark-theme-bg);
     overflow: hidden;
+}
+
+#tweet-input-box {
+    width: 100%;
+    height: 100px;
+    padding: 4%;
+    resize: none;
+}
+
+#btntweet {
+    border:none;
+    border-radius:1.5rem;
+    width: 150px;
+    cursor: pointer;
+    background: #0062cc;
+    color: #fff;
+    float: right;
 }

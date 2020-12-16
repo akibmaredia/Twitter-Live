@@ -49,7 +49,6 @@ $(function() {
 
         $("#submitbtn").text("Login");
 
-        $("#hint2").text("Sign up");
         var cache = $('#hint1').children();
         $("#hint1").text("Not a registered user? ").append(cache);
 
@@ -67,7 +66,6 @@ $(function() {
 
         $("#submitbtn").text("Sign up");
 
-        $("#hint2").text("Login");
         var cache = $('#hint1').children();
         $("#hint1").text("Already a user? ").append(cache);
 
@@ -227,6 +225,13 @@ $(function() {
         }
     });
 
-    showLogin();
+    showHomePage();
+
+    // Tweet text box
+    $('#originalTextBox').hide()
+    $('#mockTextBox').click(function() {
+        $('#mockTextBox').hide()
+        $('#originalTextBox').show()
+    });
 });
 
