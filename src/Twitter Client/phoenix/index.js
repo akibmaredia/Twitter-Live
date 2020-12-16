@@ -1,9 +1,41 @@
 $(function() {
     const URL = "http://localhost:8080/";
 
+    const WebsocketURL = "ws://localhost:8080/websocket";
+
     var isLoginView = false;
     var isHomePageView = false;
+
+    var myHandle = '';
     
+    function initWebsocket() {
+        websocket = new WebSocket(WebsocketURL);
+        websocket.onopen = function (evt) { onOpen(evt) };
+        websocket.onclose = function (evt) { onClose(evt) };
+        websocket.onmessage = function (evt) { onMessage(evt) };
+        websocket.onerror = function (evt) { onError(evt) };
+    }
+
+    function onOpen(evt) {
+        console.log('Websocket connection opened!');
+
+        // Send connection req on open
+        let msg = { Handle: myHandle };
+        websocket.send(JSON.stringify(msg));
+    }
+
+    function onClose(evt) {
+        console.log('Websocket connection closed!');
+    }
+
+    function onMessage(evt) {
+        console.log('Message from websocket - ' + evt.data);
+    }
+
+    function onError(evt) {
+        console.log('Error from websocket - ' + evt.data);
+    }
+
     function showLogin() {
         $(".form").show();
         $(".home-page").hide();
@@ -14,7 +46,7 @@ $(function() {
 
         $("#submitbtn").text("Login");
 
-        $("#hint2").text("Sign in");
+        $("#hint2").text("Sign up");
         var cache = $('#hint1').children();
         $("#hint1").text("Not a registered user? ").append(cache);
 
@@ -41,6 +73,10 @@ $(function() {
     }
     
     function showHomePage(handle = 'Handle', fc1 = 0, fc2 = 0, tc = 0) {
+        myHandle = handle;
+
+        initWebsocket();
+
         $(".form").hide();
         $(".home-page").show();
 
@@ -56,8 +92,6 @@ $(function() {
     function showError(errorMessage) {
         alert(errorMessage);
     }
-
-    showLogin();
 
     $(document).on('click', 'a[name=signinlink]', function(e) {
         if (isLoginView) showSignin();
@@ -127,5 +161,7 @@ $(function() {
             sendRegisterRequest();
         }
     });
+
+    showLogin();
 });
 
