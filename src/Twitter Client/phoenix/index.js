@@ -1,4 +1,6 @@
 $(function() {
+    const URL = "http://localhost:8080/";
+
     var isLoginView = false;
     var isHomePageView = false;
     
@@ -37,11 +39,71 @@ $(function() {
         isLoginView = false;
     }
 
+    function showError(errorMessage) {
+        alert(errorMessage);
+    }
+
     showLogin();
 
     $(document).on('click', 'a[name=signinlink]', function(e) {
         if (isLoginView) showSignin();
         else showLogin();
+    });
+
+    function sendLoginRequest() {
+        const req = {
+            Handle: $("#handleip").val(),
+            Password: $("#pwdip").val()
+        };
+
+        $.ajax({
+            url: URL + 'login',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            type: 'POST', /* or type:"GET" or type:"PUT" */
+            dataType: 'json',
+            data: JSON.stringify(req),
+            success: function (result) {
+                console.log(result);
+            },
+            error: function () {
+                showError("Error! Login failed. Invalid username and / or password.");
+            }
+        });
+    }
+
+    function sendRegisterRequest() {
+        const req = {
+            Handle: $("#handleip").val(),
+            FirstName: $("#fnameip").val(),
+            LastName: $("#lnameip").val(),
+            Password: $("#pwdip").val()
+        };
+
+        $.ajax({
+            url: URL + 'register',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            type: 'POST', /* or type:"GET" or type:"PUT" */
+            dataType: 'json',
+            data: JSON.stringify(req),
+            success: function (result) {
+                console.log(result);
+            },
+            error: function () {
+                showError("Error! User registeration failed.");
+            }
+        });
+    }
+
+    $("#submitbtn").click(function() {
+        if (isLoginView) {
+            sendLoginRequest();
+        } else {
+            sendRegisterRequest();
+        }
     });
 });
 
