@@ -65,7 +65,7 @@ type UnfollowUserRequest = {
 }
 
 type PostTweetRequest = {
-    UserId: int;
+    Handle: string;
     Content: string;
 }
 
@@ -125,7 +125,7 @@ type User = {
 type Tweet = {
     Id: int;
     Content: string;
-    PostedBy: int;
+    PostedById: int;
 }
 
 module Postman = begin
@@ -288,11 +288,11 @@ let postTweet =
         let tweet: Tweet = {
             Id = tweets.Count + 1;
             Content = req.Content;
-            PostedBy = req.UserId;
+            PostedById = handles.[req.Handle];
         }
         tweets.Add((tweet.Id, tweet))
 
-        users.[req.UserId].Tweets.Add(tweet.Id) |> ignore
+        users.[handles.[req.Handle]].Tweets.Add(tweet.Id) |> ignore
 
         let tweetMentions = findAllMatches(req.Content, mentionPattern, "@")
         
@@ -308,8 +308,8 @@ let postTweet =
                 let tweetData: TweetData = {
                     Id = tweet.Id; 
                     Content = req.Content; 
-                    PostedBy = users.[req.UserId].Handle;
-                    PostedById = req.UserId; 
+                    PostedBy = req.Handle;
+                    PostedById = handles.[req.Handle]; 
                 }
                 messages.Add(tweetData |> JsonConvert.SerializeObject)
 
@@ -329,7 +329,7 @@ let postTweet =
                 tweetIdList.Add(tweet.Id)
                 hashtags.Add((tag, tweetIdList))
 
-        let followers = users.[req.UserId].Followers
+        let followers = users.[handles.[req.Handle]].Followers
         for follower in followers do 
             if userStatus.[follower] then
                 ids.Add(follower)
@@ -337,15 +337,15 @@ let postTweet =
                 let tweetData: TweetData = {
                     Id = tweet.Id; 
                     Content = req.Content; 
-                    PostedBy = users.[req.UserId].Handle;
-                    PostedById = req.UserId; 
+                    PostedBy = req.Handle;
+                    PostedById = handles.[req.Handle]; 
                 }
                 messages.Add(tweetData |> JsonConvert.SerializeObject)
 
         Postman.Publish (ids, messages)
 
         let res: PostTweetResponse = { 
-            UserId = req.UserId;
+            UserId = handles.[req.Handle];
             TweetId = tweet.Id;
             Content = tweet.Content;
             Success = true;
@@ -377,7 +377,7 @@ let retweet =
     )
     >=> setMimeType "application/json"
 
-let getFeed handle:string = 
+let getFeed (handle:string) = 
     printfn "Get Feed request: %s" handle
     let resTweets = new List<TweetData>()
 
@@ -388,8 +388,8 @@ let getFeed handle:string =
         let data: TweetData = {
             Id = id;
             Content = tweets.[id].Content;
-            PostedBy = users.[tweets.[id].PostedBy].Handle;
-            PostedById = tweets.[id].PostedBy;
+            PostedBy = users.[tweets.[id].PostedById].Handle;
+            PostedById = tweets.[id].PostedById;
         }
         resTweets.Add(data)
 
@@ -398,8 +398,8 @@ let getFeed handle:string =
         let data: TweetData = {
             Id = id;
             Content = tweets.[id].Content;
-            PostedBy = users.[tweets.[id].PostedBy].Handle;
-            PostedById = tweets.[id].PostedBy;
+            PostedBy = users.[tweets.[id].PostedById].Handle;
+            PostedById = tweets.[id].PostedById;
         }
         resTweets.Add(data)
     
@@ -421,8 +421,8 @@ let getTweetsWithHashtag hashtag =
         let data: TweetData = {
             Id = id;
             Content = tweets.[id].Content;
-            PostedBy = users.[tweets.[id].PostedBy].Handle;
-            PostedById = tweets.[id].PostedBy;
+            PostedBy = users.[tweets.[id].PostedById].Handle;
+            PostedById = tweets.[id].PostedById;
         }
         resTweets.Add(data)
 
@@ -443,8 +443,8 @@ let getTweetsWithMention handle =
         let data: TweetData = {
             Id = id;
             Content = tweets.[id].Content;
-            PostedBy = users.[tweets.[id].PostedBy].Handle;
-            PostedById = tweets.[id].PostedBy;
+            PostedBy = users.[tweets.[id].PostedById].Handle;
+            PostedById = tweets.[id].PostedById;
         }
         resTweets.Add(data)
     
