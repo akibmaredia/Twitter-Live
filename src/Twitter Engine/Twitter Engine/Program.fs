@@ -90,11 +90,23 @@ type SuccessResponse = {
     Success: bool;
 }
 
+type RegisterLoginResponse = {
+    FollowerCount: int
+    FollowingCount: int;
+    TweetCount: int;
+    Success: bool;
+}
+
 type TweetData = { 
     Id: int;
     Content: string;
     PostedById: int;
     PostedBy: string; 
+}
+
+type TweetFeedResponse = {
+    Tweets: List<TweetData>;
+    Success: bool;
 }
 
 
@@ -175,6 +187,7 @@ let tweets = new Dictionary<int, Tweet>()
 // REST API functions
 let registerUser = 
     request (fun r ->
+        printfn "%s" (getString r.rawForm)
         let req = r.rawForm |> getString |> fromJson<RegisterUserRequest>
         printfn "Register user request: %A" req
         let user: User = {
@@ -196,7 +209,12 @@ let registerUser =
         
         userStatus.Add((user.Id, true))
 
-        let res: SuccessResponse = { Success = true; }
+        let res: RegisterLoginResponse = { 
+            FollowerCount = 0;
+            FollowingCount = 0;
+            TweetCount = 0;
+            Success = true; 
+        }
         res |> JsonConvert.SerializeObject |> CREATED
     )
     >=> setMimeType "application/json"
@@ -207,10 +225,21 @@ let loginUser =
         printfn "Login request: %A" req
         if handles.ContainsKey req.Handle && users.[handles.[req.Handle]].Password = req.Password then
             userStatus.[handles.[req.Handle]] <- true
-            let res: SuccessResponse = { Success = true; }
+            let res: RegisterLoginResponse = { 
+                FollowerCount = users.[handles.[req.Handle]].Followers.Count - 1;
+                FollowingCount = users.[handles.[req.Handle]].FollowingTo.Count - 1;
+                TweetCount = users.[handles.[req.Handle]].Tweets.Count;
+                Success = true; 
+            }
             res |> JsonConvert.SerializeObject |> OK
         else
             let res: SuccessResponse = { Success = false; }
+            let res: RegisterLoginResponse = { 
+                FollowerCount = 0;
+                FollowingCount = 0;
+                TweetCount = 0;
+                Success = false; 
+            }
             res |> JsonConvert.SerializeObject |> OK
     )
     >=> setMimeType "application/json"
@@ -348,9 +377,32 @@ let retweet =
     )
     >=> setMimeType "application/json"
 
+let getFeed userId = 
+    printfn "Get Feed request: %A" userId
+    let res: SuccessResponse = { Success = true; }
+    res |> JsonConvert.SerializeObject |> OK
+    >=> setMimeType "application/json"
+
 let getTweetsWithHashtag hashtag = 
     printfn "Hashtag tweets request: %A" hashtag
-    let res: SuccessResponse = { Success = true; }
+    
+    let resTweets = new List<TweetData>()
+
+    let tweetIds = hashtags.[hashtag]
+    
+    for id in tweetIds do
+        let data: TweetData = {
+            Id = id;
+            Content = tweets.[id].Content;
+            PostedBy = users.[tweets.[id].PostedBy].Handle;
+            PostedById = tweets.[id].PostedBy;
+        }
+        resTweets.Add(data)
+
+    let res: TweetFeedResponse = { 
+        Tweets = resTweets;
+        Success = true; 
+    }
     res |> JsonConvert.SerializeObject |> OK
     >=> setMimeType "application/json"
 
