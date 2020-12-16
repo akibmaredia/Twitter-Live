@@ -36,9 +36,6 @@ $(function() {
         console.log('Error from websocket - ' + evt.data);
     }
 
-    function follow() {
-    }
-
     function showLogin() {
         $(".form").show();
         $(".home-page").hide();
@@ -49,6 +46,7 @@ $(function() {
 
         $("#submitbtn").text("Login");
 
+        $("#hint2").text("Sign up");
         var cache = $('#hint1').children();
         $("#hint1").text("Not a registered user? ").append(cache);
 
@@ -66,6 +64,7 @@ $(function() {
 
         $("#submitbtn").text("Sign up");
 
+        $("#hint2").text("Login");
         var cache = $('#hint1').children();
         $("#hint1").text("Already a user? ").append(cache);
 
@@ -85,6 +84,8 @@ $(function() {
         $("#fc1").text('Followers - ' + fc1);
         $("#fc2").text('Following - ' + fc2);
         $("#tc").text('Tweets - ' + tc);
+
+        getFeedRequest();
 
         isHomePageView = true;
         isLoginView = false;
@@ -155,7 +156,27 @@ $(function() {
         });
     }
 
-    function getFeed () {
+    function getTweetsWithTag () {
+        const tweets = {
+        }
+
+        $.ajax({
+            url: URL + 'feed/' + $("#searchText").val(),
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            type: 'GET',
+            dataType: 'json',
+            data: JSON.stringify({}),
+            success: function (result) {
+            },
+            error: function () {
+                showError("Error! Cannot Get Feed!");
+            }
+        });
+    }
+
+    function getFeedRequest () {
         const req = {
             Handle: $("#handleip").val()
         }
@@ -175,7 +196,6 @@ $(function() {
                 //     tweets =
                 // }
                 // else {
-
                 // }
             },
             error: function () {
@@ -183,6 +203,99 @@ $(function() {
             }
         });
 
+    }
+
+    function followRequest() {
+        const req = {
+            FollowerHandle: $('#handleip').val(),
+            FolloweeHandle: $('').val(),
+        }
+
+        $.ajax({
+            url: URL + 'follow',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            type: 'POST',
+            dataType: 'json',
+            data: JSON.stringify(req),
+            success: function (result) {
+                console.log("user followed")
+            },
+            error: function () {
+                showError("Error! User follow failed.");
+            }
+        });
+    }
+
+    function unfollowRequest () {
+        const req = {
+            FollowerHandle: $('#handleip').val(),
+            FolloweeHandle: $('').val(),
+        }
+
+        $.ajax({
+            url: URL + 'unfollow',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            type: 'POST',
+            dataType: 'json',
+            data: JSON.stringify(req),
+            success: function (result) {
+                console.log("user unfollowed")
+            },
+            error: function () {
+                showError("Error! User unfollow failed.");
+            }
+        });
+    }
+
+    function retweetRequest () {
+        const req = {
+            Handle: $('#handleip').val(),
+            TweetId: $('#tweetId').val(),
+            OriginalHandle: $('#ogHandle').val(),
+        }
+
+        $ajax({
+            url: URL + 'retweet',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            type: 'POST',
+            dataType: 'json',
+            data: JSON.stringify(req),
+            success: function (result) {
+                console.log("Retweeted")
+            },
+            error: function () {
+                showError("Error! User logout failed.");
+            }
+        });
+    }
+
+    function tweetRequest () {
+        const req = {
+            Handle: $('#handleip').val(),
+            Content: $('#tweet-input-box').val(),
+        }
+
+        $ajax({
+            url: URL + 'retweet',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            type: 'POST',
+            dataType: 'json',
+            data: JSON.stringify(req),
+            success: function (result) {
+                console.log("Tweet posted")
+            },
+            error: function () {
+                showError("Error! User logout failed.");
+            }
+        });
     }
 
     function logout() {
@@ -210,12 +323,32 @@ $(function() {
     }
 
     $("#searchBtn").click(function() {
-        sendHashtagSearch();
-    })
+        getTweetsWithTag();
+    });
 
     $("#logoutBtn").click(function(evt) {
         logout();
-    })
+    });
+
+    $("#btnTweet").click(function(evt) {
+        tweetRequest()
+    });
+
+    $("#btnFollow").click(function(evt) {
+        if($('#followBtn').textContent == 'Unfollow') {
+            unfollowRequest();
+            $('#followBtn').textContent = 'Follow';
+        }
+        else {
+            followRequest();
+            $('#followBtn').textContent = 'Follow';
+        }
+
+    });
+
+    $("#btnRetweet").click(function(evt) {
+        retweetRequest();
+    });
 
     $("#submitbtn").click(function() {
         if (isLoginView) {
@@ -225,13 +358,6 @@ $(function() {
         }
     });
 
-    showHomePage();
-
-    // Tweet text box
-    $('#originalTextBox').hide()
-    $('#mockTextBox').click(function() {
-        $('#mockTextBox').hide()
-        $('#originalTextBox').show()
-    });
+    showLogin();
 });
 
