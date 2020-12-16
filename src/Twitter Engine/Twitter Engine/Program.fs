@@ -377,9 +377,11 @@ let retweet =
     )
     >=> setMimeType "application/json"
 
-let getFeed userId = 
-    printfn "Get Feed request: %A" userId
+let getFeed handle:string = 
+    printfn "Get Feed request: %s" handle
     let resTweets = new List<TweetData>()
+
+    let userId = handles.[handle]
     
     let mentioned = mentions.[userId]
     for id in mentioned do
@@ -504,7 +506,7 @@ let app : WebPart =
                 context |> (
                     setCORSHeaders
                     >=> choose [
-                            pathScan "/feed/%d" (fun id ->  getFeed id)
+                            pathScan "/feed/%s" (fun handle ->  getFeed handle)
                             pathScan "/hashtag-tweets/%s" (fun hashtag ->   getTweetsWithHashtag hashtag)
                             pathScan "/mention-tweets/%s" (fun handle ->    getTweetsWithMention handle)
                         ])
