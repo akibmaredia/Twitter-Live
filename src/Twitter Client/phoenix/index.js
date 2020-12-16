@@ -5,6 +5,9 @@ $(function() {
     var isHomePageView = false;
     
     function showLogin() {
+        $(".form").show();
+        $(".home-page").hide();
+
         $("#login-form-title").text("Login");
         $("#fname").hide();
         $("#lname").hide();
@@ -20,6 +23,9 @@ $(function() {
     }
     
     function showSignin() {
+        $(".form").show();
+        $(".home-page").hide();
+
         $("#login-form-title").text("Sign up");
         $("#fname").show();
         $("#lname").show();
@@ -34,7 +40,15 @@ $(function() {
         isHomePageView = false;
     }
     
-    function showHomePage() {
+    function showHomePage(handle = 'Handle', fc1 = 0, fc2 = 0, tc = 0) {
+        $(".form").hide();
+        $(".home-page").show();
+
+        $("#uname").text('@' + handle);
+        $("#fc1").text('Followers - ' + fc1);
+        $("#fc2").text('Following - ' + fc2);
+        $("#tc").text('Tweets - ' + tc);
+
         isHomePageView = true;
         isLoginView = false;
     }
@@ -61,11 +75,15 @@ $(function() {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
-            type: 'POST', /* or type:"GET" or type:"PUT" */
+            type: 'POST',
             dataType: 'json',
             data: JSON.stringify(req),
             success: function (result) {
-                console.log(result);
+                if (result.Success) {
+                    showHomePage(req.Handle, result.FollowerCount, result.FollowingCount, result.TweetCount);
+                } else {
+                    showError("Error! Login failed. Invalid username and / or password.");
+                }
             },
             error: function () {
                 showError("Error! Login failed. Invalid username and / or password.");
@@ -86,11 +104,15 @@ $(function() {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
-            type: 'POST', /* or type:"GET" or type:"PUT" */
+            type: 'POST',
             dataType: 'json',
             data: JSON.stringify(req),
             success: function (result) {
-                console.log(result);
+                if (result.Success) {
+                    showHomePage(req.Handle, result.FollowerCount, result.FollowingCount, result.TweetCount);
+                } else {
+                    showError("Error! Login failed. Invalid username and / or password.");
+                }
             },
             error: function () {
                 showError("Error! User registeration failed.");

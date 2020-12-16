@@ -56,3 +56,15 @@
     font-size: medium;
     line-height: 30px;
 }
+
+.home-page-header {
+    text-align: left;
+    height: 120px;
+    padding-left: 4%;
+    padding-right: 4%;
+    background: -webkit-linear-gradient(left, #0072ff, #8811c5);
+    color: #fff;
+    font-weight: bold;
+    font-size: 26px;
+    line-height: 120px;
+}
