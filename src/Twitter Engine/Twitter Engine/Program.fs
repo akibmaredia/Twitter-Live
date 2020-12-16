@@ -329,8 +329,19 @@ let retweet =
     request (fun r -> 
         let req = r.rawForm |> getString |> fromJson<RetweetRequest>
         let followers = users.[req.UserId].Followers
+        let ids = new List<int>()
+        let messages = new List<string>()
         for follower in followers do 
-            ()
+            if userStatus.[follower] then
+                ids.Add(follower)
+                
+                let tweetData: TweetData = {
+                    Id = req.TweetId; 
+                    Content = tweets.[req.TweetId].Content; 
+                    PostedBy = users.[req.OriginalUserId].Handle;
+                    PostedById = req.OriginalUserId; 
+                }
+                messages.Add(tweetData |> JsonConvert.SerializeObject)
 
         let res: SuccessResponse = { Success = true; }
         res |> JsonConvert.SerializeObject |> OK
