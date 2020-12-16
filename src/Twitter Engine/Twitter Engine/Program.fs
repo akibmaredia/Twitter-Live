@@ -395,23 +395,40 @@ let ws (webSocket : WebSocket) (context : HttpContext) =
     }
 
 
+// CORS Headers
+let setCORSHeaders = 
+    addHeader  "Access-Control-Allow-Origin" "*" 
+    >=> setHeader "Access-Control-Allow-Headers" "token" 
+    >=> addHeader "Access-Control-Allow-Headers" "content-type" 
+    >=> addHeader "Access-Control-Allow-Methods" "GET,POST,PUT"
+
+
 // Routes
 let app : WebPart = 
     choose [
-        GET >=> choose [
-            pathScan "/hashtag-tweets/%s" (fun hashtag ->   getTweetsWithHashtag hashtag)
-            pathScan "/mention-tweets/%s" (fun handle ->    getTweetsWithMention handle)
-        ]
+        GET >=> 
+            fun context ->
+                context |> (
+                    setCORSHeaders
+                    >=> choose [
+                            pathScan "/feed/%d" (fun id ->  getFeed id)
+                            pathScan "/hashtag-tweets/%s" (fun hashtag ->   getTweetsWithHashtag hashtag)
+                            pathScan "/mention-tweets/%s" (fun handle ->    getTweetsWithMention handle)
+                        ])
 
-        POST >=> choose [
-            path "/register" >=> registerUser
-            path "/login" >=> loginUser
-            path "/logout" >=> logoutUser
-            path "/follow" >=> followUser
-            path "/unfollow" >=> unfollowUser
-            path "/tweet" >=> postTweet
-            path "/retweet" >=> retweet
-        ]
+        POST >=> 
+            fun context ->
+                context |> (
+                    setCORSHeaders
+                    >=> choose [
+                            path "/register" >=> registerUser
+                            path "/login" >=> loginUser
+                            path "/logout" >=> logoutUser
+                            path "/follow" >=> followUser
+                            path "/unfollow" >=> unfollowUser
+                            path "/tweet" >=> postTweet
+                            path "/retweet" >=> retweet
+                        ])
 
         path "/websocket" >=> handShake ws
 
