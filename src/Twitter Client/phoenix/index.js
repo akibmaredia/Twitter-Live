@@ -36,6 +36,9 @@ $(function() {
         console.log('Error from websocket - ' + evt.data);
     }
 
+    function follow() {
+    }
+
     function showLogin() {
         $(".form").show();
         $(".home-page").hide();
@@ -153,6 +156,68 @@ $(function() {
             }
         });
     }
+
+    function getFeed () {
+        const req = {
+            Handle: $("#handleip").val()
+        }
+
+        const tweets = {}
+
+        $.ajax({
+            url: URL + 'feed/' + $("#handleip").val(),
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            type: 'GET',
+            dataType: 'json',
+            data: JSON.stringify(req),
+            success: function (result) {
+                // if(success) {
+                //     tweets =
+                // }
+                // else {
+
+                // }
+            },
+            error: function () {
+                showError("Error! Cannot Get Feed!");
+            }
+        });
+
+    }
+
+    function logout() {
+        const req = {
+            Handle: $("#handleip").val()
+        }
+
+        $.ajax({
+            url: URL + 'logout',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            type: 'POST',
+            dataType: 'json',
+            data: JSON.stringify(req),
+            success: function (result) {
+                showLogin();
+                websocket.close();
+            },
+            error: function () {
+                showError("Error! User logout failed.");
+            }
+        });
+        showLogin();
+    }
+
+    $("#searchBtn").click(function() {
+        sendHashtagSearch();
+    })
+
+    $("#logoutBtn").click(function(evt) {
+        logout();
+    })
 
     $("#submitbtn").click(function() {
         if (isLoginView) {

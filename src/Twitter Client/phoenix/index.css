@@ -65,7 +65,7 @@
     background: -webkit-linear-gradient(left, #0072ff, #8811c5);
     color: #fff;
     font-weight: bold;
-    font-size: 26px;
+    font-size: 18px;
     line-height: 120px;
 }
 
@@ -73,8 +73,8 @@
     text-align: left;
     margin: 2%;
     height: 480px;
-    padding-left: 4%;
-    padding-right: 4%;
+    padding-left: 1%;
+    padding-right: 1%;
     background: -webkit-linear-gradient(left, #e2e3e6, #f3eef5);
     color: #333;
     line-height: 480px;
@@ -89,4 +89,41 @@
     background: -webkit-linear-gradient(left, #c4d0f5, #abbbf0);
     color: #333;
     line-height: 480px;
+}
+
+.column {
+    float: left;
+    padding: 1%;
+}
+
+.btnSearch {
+    border:none;
+    border-radius:1.5rem;
+    /* height: 2rem; */
+    cursor: pointer;
+    background: #0062cc;
+    color: #fff;
+}
+
+.btnSearch {
+    border:none;
+    border-radius:1.5rem;
+    /* height: 2rem; */
+    cursor: pointer;
+    background: #0062cc;
+    color: #fff;
+}
+
+.btnLogout {
+    border:none;
+    border-radius:1.5rem;
+    /* height: 2rem; */
+    cursor: pointer;
+    background: #d482fd;
+    color: #fff;
+}
+
+
+.handle {
+    font-size: 26px;
 }
