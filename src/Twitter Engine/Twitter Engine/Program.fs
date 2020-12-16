@@ -55,13 +55,13 @@ type LogoutUserRequest = {
 }
 
 type FollowUserRequest = {
-    FollowerId: int;
-    FolloweeId: int;
+    FollowerHandle: string;
+    FolloweeHandle: string;
 }
 
 type UnfollowUserRequest = {
-    FollowerId: int;
-    FolloweeId: int;
+    FollowerHandle: string;
+    FolloweeHandle: string;
 }
 
 type PostTweetRequest = {
@@ -258,8 +258,8 @@ let followUser =
     request (fun r -> 
         let req = r.rawForm |> getString |> fromJson<FollowUserRequest>
         printfn "Follow request: %A" req
-        users.[req.FollowerId].FollowingTo.Add(req.FolloweeId) |> ignore
-        users.[req.FolloweeId].Followers.Add(req.FollowerId) |> ignore
+        users.[handles.[req.FollowerHandle]].FollowingTo.Add(handles.[req.FolloweeHandle]) |> ignore
+        users.[handles.[req.FolloweeHandle]].Followers.Add(handles.[req.FollowerHandle]) |> ignore
         for u in users do
             printfn "%A" u
         let res: SuccessResponse = { Success = true; }
@@ -382,16 +382,16 @@ let getFeed (handle:string) =
     let resTweets = new List<TweetData>()
 
     let userId = handles.[handle]
-    
-    let mentioned = mentions.[userId]
-    for id in mentioned do
-        let data: TweetData = {
-            Id = id;
-            Content = tweets.[id].Content;
-            PostedBy = users.[tweets.[id].PostedById].Handle;
-            PostedById = tweets.[id].PostedById;
-        }
-        resTweets.Add(data)
+    if mentions.ContainsKey userId then
+        let mentioned = mentions.[userId]
+        for id in mentioned do
+            let data: TweetData = {
+                Id = id;
+                Content = tweets.[id].Content;
+                PostedBy = users.[tweets.[id].PostedById].Handle;
+                PostedById = tweets.[id].PostedById;
+            }
+            resTweets.Add(data)
 
     let following = users.[userId].FollowingTo
     for id in following do
