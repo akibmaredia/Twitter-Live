@@ -69,19 +69,6 @@
     line-height: 120px;
 }
 
-.home-page-left-pane {
-    text-align: left;
-    color: #333;
-    line-height: 480px;
-}
-
-.home-page-right-pane {
-    text-align: left;
-    margin-left: 2%;
-    color: #333;
-    line-height: 480px;
-}
-
 .home-page-content {
     background: -webkit-linear-gradient(left, #bc9bcc, #9fbbdf);
     padding: 2%;
@@ -147,4 +134,48 @@
     background: #0062cc;
     color: #fff;
     float: right;
+}
+
+ul li {
+    list-style-type: none;
+}
+
+.tweet-section {
+    text-align: center;
+    height: 40px;
+    color: #555;
+    font-weight: bold;
+    font-size: 18px;
+    line-height: 40px;
+}
+
+.single-tweet {
+    width: 100%;
+    height: 100px;
+}
+
+.tweet-author {
+    color: #333;
+    font-size: medium;
+    height: auto;
+    font-weight: 600;
+}
+
+.tweet-content {
+    margin-left: 12px;
+}
+
+#btnretweet {
+    border:none;
+    border-radius:1.5rem;
+    width: 100px;
+    cursor: pointer;
+    font-size: small;
+    margin-left: 35%;
+    margin-right: 0%;
+    position: absolute;
+    background: #0062cc;
+    color: #fff;
+    float: right;
+    height: auto;
 }
