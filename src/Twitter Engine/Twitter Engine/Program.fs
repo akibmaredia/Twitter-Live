@@ -102,6 +102,33 @@ type Tweet = {
     PostedBy: int;
 }
 
+module Postman = begin
+    let sendMessage (webSocket: WebSocket) (response: string) = begin
+        let byteResponse = response |> System.Text.Encoding.ASCII.GetBytes |> ByteSegment
+        webSocket.send Text byteResponse true
+    end
+
+    type Commands = 
+        | AddConnection of int * WebSocket
+        | Publish of List<int> * List<string>
+
+    let rec private startMailbox (inbox: MailboxProcessor<Commands>) = begin
+        let rec loop (liveConnections: Map<int, WebSocket>) = async {
+            let! input = inbox.Receive()
+            match input with
+            | AddConnection (id, ws) -> 
+                return! liveConnections |> Map.add id ws |> loop
+            | Publish (userIds, messages) -> 
+                for i in [0 .. userIds.Count - 1] do
+                    if liveConnections.ContainsKey userIds.[i] then
+                        let ws = liveConnections.[userIds.[i]]
+                        let! res = messages.[i] |> sendMessage ws
+                        ()
+                    else ()
+                return! loop(liveConnections)
+        }
+        loop(Map.empty)
+    end
 
 // Database
 // User Id -> WebSocket instance mapping
