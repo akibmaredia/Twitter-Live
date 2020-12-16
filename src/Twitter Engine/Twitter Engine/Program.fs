@@ -379,7 +379,32 @@ let retweet =
 
 let getFeed userId = 
     printfn "Get Feed request: %A" userId
-    let res: SuccessResponse = { Success = true; }
+    let resTweets = new List<TweetData>()
+    
+    let mentioned = mentions.[userId]
+    for id in mentioned do
+        let data: TweetData = {
+            Id = id;
+            Content = tweets.[id].Content;
+            PostedBy = users.[tweets.[id].PostedBy].Handle;
+            PostedById = tweets.[id].PostedBy;
+        }
+        resTweets.Add(data)
+
+    let following = users.[userId].FollowingTo
+    for id in following do
+        let data: TweetData = {
+            Id = id;
+            Content = tweets.[id].Content;
+            PostedBy = users.[tweets.[id].PostedBy].Handle;
+            PostedById = tweets.[id].PostedBy;
+        }
+        resTweets.Add(data)
+    
+    let res: TweetFeedResponse = { 
+        Tweets = resTweets;
+        Success = true; 
+    }
     res |> JsonConvert.SerializeObject |> OK
     >=> setMimeType "application/json"
 
