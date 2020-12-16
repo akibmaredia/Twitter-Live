@@ -70,16 +70,16 @@ type PostTweetRequest = {
 }
 
 type PostTweetResponse = {
-    UserId: int;
+    Handle: string;
     TweetId: int;
     Content: string;
     Success: bool;
 }
 
 type RetweetRequest = {
-    UserId: int;
+    Handle: string;
     TweetId: int;
-    OriginalUserId: int;
+    OriginalHandle: string;
 }
 
 type InitLiveConnectionRequest = {
@@ -100,8 +100,8 @@ type RegisterLoginResponse = {
 type TweetData = { 
     Id: int;
     Content: string;
+    PostedBy: string;
     PostedById: int;
-    PostedBy: string; 
 }
 
 type TweetFeedResponse = {
@@ -128,6 +128,8 @@ type Tweet = {
     PostedById: int;
 }
 
+
+// Module to pass live data to the clients
 module Postman = begin
     let sendMessage (webSocket: WebSocket) (response: string) = begin
         let byteResponse = response |> System.Text.Encoding.ASCII.GetBytes |> ByteSegment
@@ -271,8 +273,8 @@ let unfollowUser =
     request (fun r -> 
         let req = r.rawForm |> getString |> fromJson<UnfollowUserRequest>
         printfn "Unfollow request: %A" req
-        users.[req.FollowerId].FollowingTo.Remove(req.FolloweeId) |> ignore
-        users.[req.FolloweeId].Followers.Remove(req.FollowerId) |> ignore
+        users.[handles.[req.FollowerHandle]].FollowingTo.Remove(handles.[req.FolloweeHandle]) |> ignore
+        users.[handles.[req.FolloweeHandle]].Followers.Remove(handles.[req.FollowerHandle]) |> ignore
         for u in users do
             printfn "%A" u
         let res: SuccessResponse = { Success = true; }
@@ -345,7 +347,7 @@ let postTweet =
         Postman.Publish (ids, messages)
 
         let res: PostTweetResponse = { 
-            UserId = handles.[req.Handle];
+            Handle = req.Handle;
             TweetId = tweet.Id;
             Content = tweet.Content;
             Success = true;
@@ -357,7 +359,7 @@ let postTweet =
 let retweet = 
     request (fun r -> 
         let req = r.rawForm |> getString |> fromJson<RetweetRequest>
-        let followers = users.[req.UserId].Followers
+        let followers = users.[handles.[req.Handle]].Followers
         let ids = new List<int>()
         let messages = new List<string>()
         for follower in followers do 
@@ -367,8 +369,8 @@ let retweet =
                 let tweetData: TweetData = {
                     Id = req.TweetId; 
                     Content = tweets.[req.TweetId].Content; 
-                    PostedBy = users.[req.OriginalUserId].Handle;
-                    PostedById = req.OriginalUserId; 
+                    PostedBy = users.[handles.[req.OriginalHandle]].Handle;
+                    PostedById = handles.[req.OriginalHandle]; 
                 }
                 messages.Add(tweetData |> JsonConvert.SerializeObject)
 
