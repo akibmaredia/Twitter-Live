@@ -46,7 +46,6 @@ $(function() {
 
         $("#submitbtn").text("Login");
 
-        $("#hint2").text("Sign up");
         var cache = $('#hint1').children();
         $("#hint1").text("Not a registered user? ").append(cache);
 
@@ -64,7 +63,6 @@ $(function() {
 
         $("#submitbtn").text("Sign up");
 
-        $("#hint2").text("Login");
         var cache = $('#hint1').children();
         $("#hint1").text("Already a user? ").append(cache);
 
@@ -220,7 +218,7 @@ $(function() {
             dataType: 'json',
             data: JSON.stringify(req),
             success: function (result) {
-                console.log("user followed")
+                console.log("user followed");
             },
             error: function () {
                 showError("Error! User follow failed.");
