@@ -3,13 +3,13 @@
     <head>
         <meta charset="utf-8" />
         <title>Twitter Demo</title>
-<!-- CSS only -->
+        <!-- CSS only -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" 
             rel="stylesheet" 
             integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" 
             crossorigin="anonymous">
 
-        <link href="./index.css" rel="stylesheet">    
+        <link href="./index.css" rel="stylesheet">
 
         <!-- JavaScript Bundle with Popper -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" 
@@ -72,10 +72,10 @@
             <div class="home-page">
                 <div class="home-page-header">
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-4 handle">
                             <p id="uname">@Username</p>
                         </div>
-                        <div class="col-md-2"></div>
+                        <!-- <div class="col-md-2"></div> -->
                         <div class="col-md-2">
                             <p id="fc1">@Username</p>
                         </div>
@@ -85,14 +85,22 @@
                         <div class="col-md-2">
                             <p id="tc">@Username</p>
                         </div>
+                        <div class="col-md-2">
+                            <button id="logoutBtn" class= "btnLogout form-control" type="button">Logout</button>
+                        </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-4 home-page-left-pane">
-
+                        <div class= "column">
+                            <input id= "searchText" class= "form-control" type= "text" placeholder= "Search hashtags eg: 'science'">
+                        </div>
+                        <div class="column">
+                            <button id= "searchBtn" class= "btnSearch form-control" type="button">Search</button>
+                        </div>
                     </div>
-                    <div class="col-md-8 home-page-right-pane">
-
+                    <div class="col-md-7 home-page-right-pane">
+                        <h1>Your feed</h1>
                     </div>
                 </div>
             </div>
