@@ -397,13 +397,14 @@ let getFeed (handle:string) =
 
     let following = users.[userId].FollowingTo
     for id in following do
-        let data: TweetData = {
-            Id = id;
-            Content = tweets.[id].Content;
-            PostedBy = users.[tweets.[id].PostedById].Handle;
-            PostedById = tweets.[id].PostedById;
-        }
-        resTweets.Add(data)
+        for tweetId in users.[id].Tweets do
+            let data: TweetData = {
+                Id = tweetId;
+                Content = tweets.[tweetId].Content;
+                PostedBy = users.[tweets.[tweetId].PostedById].Handle;
+                PostedById = tweets.[tweetId].PostedById;
+            }
+            resTweets.Add(data)
     
     let res: TweetFeedResponse = { 
         Tweets = resTweets;

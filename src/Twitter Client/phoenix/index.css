@@ -13,7 +13,6 @@
     padding-bottom: 5%;
     padding-left: 30%;
     padding-right: 30%;
-    border: 1px solid #ced4da;
 }
 
 .form-control {
@@ -126,7 +125,7 @@
     resize: none;
 }
 
-#btntweet {
+#btnTweet {
     border:none;
     border-radius:1.5rem;
     width: 150px;

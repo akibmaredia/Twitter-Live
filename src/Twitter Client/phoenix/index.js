@@ -279,8 +279,8 @@ $(function() {
             Content: $('#tweet-input-box').val(),
         }
 
-        $ajax({
-            url: URL + 'retweet',
+        $.ajax({
+            url: URL + 'tweet',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
@@ -357,5 +357,7 @@ $(function() {
     });
 
     showLogin();
+
+    // showHomePage();
 });
 
