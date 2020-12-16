@@ -37,7 +37,7 @@ let findAllMatches (text: string, regex: string, sep: string) =
     ans
 
 
-// Type definitions for REST
+// Type definitions for REST and Websocket
 type RegisterUserRequest = {
     Handle: string;
     FirstName: string;
@@ -45,25 +45,13 @@ type RegisterUserRequest = {
     Password: string;
 }
 
-type RegisterUserResponse = {
-    Success: bool;
-}
-
 type LoginUserRequest = {
     Handle: string;
     Password: string;
 }
 
-type LoginUserResponse = {
-    Success: bool;
-}
-
 type LogoutUserRequest = {
     Handle: string;
-}
-
-type LogoutUserResponse = {
-    Success: bool;
 }
 
 type FollowUserRequest = {
@@ -71,18 +59,44 @@ type FollowUserRequest = {
     FolloweeId: int;
 }
 
-type FollowUserResponse = {
-    Success: bool;
-}
-
 type UnfollowUserRequest = {
     FollowerId: int;
     FolloweeId: int;
 }
 
-type UnfollowUserResponse = {
+type PostTweetRequest = {
+    UserId: int;
+    Content: string;
+}
+
+type PostTweetResponse = {
+    UserId: int;
+    TweetId: int;
+    Content: string;
     Success: bool;
 }
+
+type RetweetRequest = {
+    UserId: int;
+    TweetId: int;
+    OriginalUserId: int;
+}
+
+type InitLiveConnectionRequest = {
+    Handle: string;
+}
+
+type SuccessResponse = {
+    Success: bool;
+}
+
+type TweetData = { 
+    Id: int;
+    Content: string;
+    PostedById: int;
+    PostedBy: string; 
+}
+
 
 // Models
 type User = {
@@ -138,6 +152,7 @@ module Postman = begin
 end
 
 
+// Database
 // User Id -> User Instance mapping
 let users = new Dictionary<int, User>()
 
@@ -181,10 +196,7 @@ let registerUser =
         
         userStatus.Add((user.Id, true))
 
-        for u in users do
-            printfn "%A" u
-
-        let res: RegisterUserResponse = { Success = true; }
+        let res: SuccessResponse = { Success = true; }
         res |> JsonConvert.SerializeObject |> CREATED
     )
     >=> setMimeType "application/json"
@@ -195,10 +207,10 @@ let loginUser =
         printfn "Login request: %A" req
         if handles.ContainsKey req.Handle && users.[handles.[req.Handle]].Password = req.Password then
             userStatus.[handles.[req.Handle]] <- true
-            let res: LoginUserResponse = { Success = true; }
+            let res: SuccessResponse = { Success = true; }
             res |> JsonConvert.SerializeObject |> OK
         else
-            let res: LoginUserResponse = { Success = false; }
+            let res: SuccessResponse = { Success = false; }
             res |> JsonConvert.SerializeObject |> OK
     )
     >=> setMimeType "application/json"
@@ -208,7 +220,7 @@ let logoutUser =
         let req = r.rawForm |> getString |> fromJson<LogoutUserRequest>
         printfn "Logout request: %A" req
         userStatus.[handles.[req.Handle]] <- false
-        let res: LogoutUserResponse = { Success = true; }
+        let res: SuccessResponse = { Success = true; }
         res |> JsonConvert.SerializeObject |> OK
     )
     >=> setMimeType "application/json"
@@ -221,7 +233,7 @@ let followUser =
         users.[req.FolloweeId].Followers.Add(req.FollowerId) |> ignore
         for u in users do
             printfn "%A" u
-        let res: FollowUserResponse = { Success = true; }
+        let res: SuccessResponse = { Success = true; }
         res |> JsonConvert.SerializeObject |> OK
     )
     >=> setMimeType "application/json"
@@ -234,22 +246,163 @@ let unfollowUser =
         users.[req.FolloweeId].Followers.Remove(req.FollowerId) |> ignore
         for u in users do
             printfn "%A" u
-        let res: UnfollowUserResponse = { Success = true; }
+        let res: SuccessResponse = { Success = true; }
         res |> JsonConvert.SerializeObject |> OK
     )
     >=> setMimeType "application/json"
+
+let postTweet = 
+    request (fun r -> 
+        let req = r.rawForm |> getString |> fromJson<PostTweetRequest>
+        printfn "PostTweet request: %A" req
+
+        let tweet: Tweet = {
+            Id = tweets.Count + 1;
+            Content = req.Content;
+            PostedBy = req.UserId;
+        }
+        tweets.Add((tweet.Id, tweet))
+
+        users.[req.UserId].Tweets.Add(tweet.Id) |> ignore
+
+        let tweetMentions = findAllMatches(req.Content, mentionPattern, "@")
+        
+        let ids = new List<int>()
+        let messages = new List<string>()
+
+        for mention in tweetMentions do
+            if handles.ContainsKey mention then
+                let userId = handles.[mention]
+                
+                ids.Add(userId)
+
+                let tweetData: TweetData = {
+                    Id = tweet.Id; 
+                    Content = req.Content; 
+                    PostedBy = users.[req.UserId].Handle;
+                    PostedById = req.UserId; 
+                }
+                messages.Add(tweetData |> JsonConvert.SerializeObject)
+
+                if mentions.ContainsKey userId then
+                    mentions.[userId].Add(tweet.Id)
+                else 
+                    let tweetIdList = new List<int>()
+                    tweetIdList.Add(tweet.Id)
+                    mentions.Add((userId, tweetIdList))
+        
+        let tweetHashtags = findAllMatches(req.Content, hashtagPattern, "#")
+        for tag in tweetHashtags do
+            if hashtags.ContainsKey tag then
+                hashtags.[tag].Add(tweet.Id)
+            else 
+                let tweetIdList = new List<int>()
+                tweetIdList.Add(tweet.Id)
+                hashtags.Add((tag, tweetIdList))
+
+        let followers = users.[req.UserId].Followers
+        for follower in followers do 
+            if userStatus.[follower] then
+                ids.Add(follower)
+                
+                let tweetData: TweetData = {
+                    Id = tweet.Id; 
+                    Content = req.Content; 
+                    PostedBy = users.[req.UserId].Handle;
+                    PostedById = req.UserId; 
+                }
+                messages.Add(tweetData |> JsonConvert.SerializeObject)
+
+        Postman.Publish (ids, messages)
+
+        let res: PostTweetResponse = { 
+            UserId = req.UserId;
+            TweetId = tweet.Id;
+            Content = tweet.Content;
+            Success = true;
+        }
+        res |> JsonConvert.SerializeObject |> OK
+    )
+    >=> setMimeType "application/json"
+
+let retweet = 
+    request (fun r -> 
+        let req = r.rawForm |> getString |> fromJson<RetweetRequest>
+        let followers = users.[req.UserId].Followers
+        for follower in followers do 
+            ()
+
+        let res: SuccessResponse = { Success = true; }
+        res |> JsonConvert.SerializeObject |> OK
+    )
+    >=> setMimeType "application/json"
+
+let getTweetsWithHashtag hashtag = 
+    printfn "Hashtag tweets request: %A" hashtag
+    let res: SuccessResponse = { Success = true; }
+    res |> JsonConvert.SerializeObject |> OK
+    >=> setMimeType "application/json"
+
+let getTweetsWithMention handle = 
+    printfn "Mention tweets request: %A" handle
+    let res: SuccessResponse = { Success = true; }
+    res |> JsonConvert.SerializeObject |> OK
+    >=> setMimeType "application/json"
+
+
+// Websocket
+let ws (webSocket : WebSocket) (context : HttpContext) =
+    socket {
+        // if `loop` is set to false, the server will stop receiving messages
+        let mutable loop = true
+
+        while loop do
+            // the server will wait for a message to be received without blocking the thread
+            let! msg = webSocket.read()
+
+            match msg with
+            | (Text, data, true) ->
+                let req = data |> getString |> fromJson<InitLiveConnectionRequest>
+
+                if handles.ContainsKey req.Handle then
+                    Postman.AddConnection (handles.[req.Handle], webSocket)
+
+                let response = "Connected!"
+                    
+                // the response needs to be converted to a ByteSegment
+                let byteResponse = response |> System.Text.Encoding.ASCII.GetBytes |> ByteSegment
+                
+                // the `send` function sends a message back to the client
+                do! webSocket.send Text byteResponse true
+            | (Close, _, _) ->
+                let emptyResponse = [||] |> ByteSegment
+                do! webSocket.send Close emptyResponse true
+
+                // after sending a Close message, stop the loop
+                // loop <- false
+            | _ -> ()
+    }
 
 
 // Routes
 let app : WebPart = 
     choose [
+        GET >=> choose [
+            pathScan "/hashtag-tweets/%s" (fun hashtag ->   getTweetsWithHashtag hashtag)
+            pathScan "/mention-tweets/%s" (fun handle ->    getTweetsWithMention handle)
+        ]
+
         POST >=> choose [
             path "/register" >=> registerUser
             path "/login" >=> loginUser
             path "/logout" >=> logoutUser
             path "/follow" >=> followUser
             path "/unfollow" >=> unfollowUser
+            path "/tweet" >=> postTweet
+            path "/retweet" >=> retweet
         ]
+
+        path "/websocket" >=> handShake ws
 
         NOT_FOUND "Resource not found. 404!" ]
 
