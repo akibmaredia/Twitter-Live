@@ -109,6 +109,12 @@ $(function() {
     function addTweetItem(id = 0, handle = '', content = '') {
         $("#tweet-id").text(id);
         $("#tweet-list").append('<li class="tweet-item"><div class="single-tweet"><p class="tweet-author">' + '@' + handle + '</p><div class="row tweet-data-container"><p class="col-md-8 tweet-content">' + content + '</p><button id="btnretweet" class="form-control" type="button">Retweet</button></div></div></li>');
+        $("#btnRetweet").attr("data-tweet-id", id);
+        $("#btnRetweet").attr("data-tweet-poster", handle);
+
+        $("#btnRetweet").click(function(evt) {
+            retweetRequest($(this).data('tweet-id'), $(this).data('tweet-poster'));
+        });
     }
 
     function addUserItem(handle = '') {
@@ -172,8 +178,11 @@ $(function() {
     }
 
     function getTweetsWithTag () {
+        var tag = $("#searchText").val();
+        tag = tag.substring(1);
+        console.log(tag);
         $.ajax({
-            url: URL + 'feed/' + $("#searchText").val(),
+            url: URL + 'hashtag-tweets/' + tag,
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
@@ -248,10 +257,13 @@ $(function() {
     }
 
     function followRequest() {
+        var followee = $("#follow").val();
+        followee = followee.substring(1);
         const req = {
-            FollowerHandle: $('#handleip').val(),
-            FolloweeHandle: $('#followUser').val(),
+            FollowerHandle: myHandle,
+            FolloweeHandle: followee
         }
+        console.log(followee);
 
         $.ajax({
             url: URL + 'follow',
@@ -263,18 +275,24 @@ $(function() {
             data: JSON.stringify(req),
             success: function (result) {
                 console.log("user followed");
+                $('#follow').val("");
             },
             error: function () {
                 showError("Error! User follow failed.");
+                $('#follow').val("");
             }
         });
     }
 
-    function unfollowRequest (unfollowHandle) {
+    function unfollowRequest () {
+        var followee = $('#unfollow').val();
+        followee = followee.substring(1);
         const req = {
-            FollowerHandle: $('#handleip').val(),
-            FolloweeHandle: unfollowHandle,
+            FollowerHandle: myHandle,
+            FolloweeHandle: followee
         }
+
+        console.log(req);
 
         $.ajax({
             url: URL + 'unfollow',
@@ -286,18 +304,20 @@ $(function() {
             data: JSON.stringify(req),
             success: function (result) {
                 console.log("user unfollowed")
+                // $('#unfollow').val("");
             },
             error: function () {
                 showError("Error! User unfollow failed.");
+                // $('#unfollow').val("");
             }
         });
     }
 
-    function retweetRequest () {
+    function retweetRequest (id, ogHandle) {
         const req = {
             Handle: $('#handleip').val(),
-            TweetId: $('#tweetId').val(),
-            OriginalHandle: $('#ogHandle').val(),
+            TweetId: id,
+            OriginalHandle: ogHandle
         }
 
         $.ajax({
@@ -376,21 +396,13 @@ $(function() {
         tweetRequest()
     });
 
-    $("#btnFollow").click(function(evt) {
-        const followeeHandle = "aslkfj"
+    $("#followBtn").click(function(evt) {
+        followRequest();
 
-        if($('#btnFollow').textContent == 'Unfollow') {
-            unfollowRequest(followeeHandle);
-            $('#btnFollow').textContent = 'Follow';
-        }
-        else {
-            followRequest();
-            $('#btnFollow').textContent = 'Follow';
-        }
     });
 
-    $("#btnRetweet").click(function(evt) {
-        retweetRequest();
+    $("#unfollowBtn").click(function(evt) {
+        unfollowRequest();
     });
 
     $("#submitbtn").click(function() {

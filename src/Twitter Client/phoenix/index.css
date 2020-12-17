@@ -161,11 +161,7 @@ ul li {
     font-weight: 600;
 }
 
-.tweet-content {
-    margin-left: 12px;
-}
-
-#btnretweet {
+#btnRetweet {
     border:none;
     border-radius:1.5rem;
     width: 100px;
@@ -178,13 +174,6 @@ ul li {
     color: #fff;
     float: right;
     height: auto;
-}
-
-.user-content {
-    margin-top: 80px;
-    padding-top: 10px; 
-    border-radius: 8px; 
-    background: -webkit-linear-gradient(left, rgba(182, 138, 204, 0.5), rgba(140, 176, 223, 0.5));
 }
 
 .radios {
