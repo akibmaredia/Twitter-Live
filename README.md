@@ -33,7 +33,7 @@ This project is to demonstrate the following twitter functionalities using F# ba
 - WebSocket is used to deliver the following data live to the desirable client connections
   - Send tweet if any of the user you're following has made a post
   - Send tweet if someone has mentioned you in their tweet
-  - Send new user added event to all the users
+  - Send new user added event to all the users. This is implemented from the backend and we're sending as well as receiving the new user added event on the frontend, but due to time constraints we couldn't create UI for this.
 - We're using concurrent Map data structure to store all the relevant information on the server side. 
 
 <br/>
