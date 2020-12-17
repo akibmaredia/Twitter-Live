@@ -202,7 +202,10 @@ $(function() {
             data: JSON.stringify({}),
             success: function (result) {
                 if (result.Success) {
-                    
+                    for (var i = 0; i < result.Tweets.length; i++) {
+                        var tweetObj = result.Tweets[i];
+                        addTweetItem(tweetObj.Id, tweetObj.PostedBy, tweetObj.Content);
+                    }
                 } else {
                     showError("Error! Cannot Get Feed!");    
                 }

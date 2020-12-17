@@ -1,3 +1,7 @@
+body {
+    background: -webkit-linear-gradient(left, #bc9bcc, #9fbbdf);
+}
+
 .note {
     text-align: center;
     height: 120px;
@@ -51,7 +55,7 @@
     text-align: center;
     height: 30px;
     color: #444;
-    font-weight: 300;
+    font-weight: 400;
     font-size: medium;
     line-height: 30px;
 }
@@ -69,10 +73,9 @@
 }
 
 .home-page-content {
-    background: -webkit-linear-gradient(left, #bc9bcc, #9fbbdf);
     padding: 2%;
     margin: 0.1%;
-    height: 600px;
+    height: auto;
 }
 
 .column {
