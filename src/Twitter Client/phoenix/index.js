@@ -112,7 +112,7 @@ $(function() {
     }
 
     function addUserItem(handle = '') {
-
+        $("#user-list").append('<li class= "user-item"><div class="single-user"><div class="row"><p class="col-md-6 user-content">'+ handle +'</p><button id="btnFollow" class="form-control" type="button">Follow</button></div></div></li>');
     }
 
     function sendLoginRequest() {
@@ -247,7 +247,7 @@ $(function() {
     function followRequest() {
         const req = {
             FollowerHandle: $('#handleip').val(),
-            FolloweeHandle: $('').val(),
+            FolloweeHandle: $('#followUser').val(),
         }
 
         $.ajax({
@@ -270,7 +270,7 @@ $(function() {
     function unfollowRequest () {
         const req = {
             FollowerHandle: $('#handleip').val(),
-            FolloweeHandle: $('').val(),
+            FolloweeHandle: $('#followUser').val(),
         }
 
         $.ajax({
@@ -374,13 +374,13 @@ $(function() {
     });
 
     $("#btnFollow").click(function(evt) {
-        if($('#followBtn').textContent == 'Unfollow') {
+        if($('#btnFollow').textContent == 'Unfollow') {
             unfollowRequest();
-            $('#followBtn').textContent = 'Follow';
+            $('#btnFollow').textContent = 'Follow';
         }
         else {
             followRequest();
-            $('#followBtn').textContent = 'Follow';
+            $('#btnFollow').textContent = 'Follow';
         }
     });
 

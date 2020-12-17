@@ -75,7 +75,10 @@ body {
 .home-page-content {
     padding: 2%;
     margin: 0.1%;
+<<<<<<< Updated upstream
     height: auto;
+=======
+>>>>>>> Stashed changes
 }
 
 .column {
@@ -178,6 +181,13 @@ ul li {
     color: #fff;
     float: right;
     height: auto;
+}
+
+.user-content {
+    margin-top: 80px;
+    padding-top: 10px; 
+    border-radius: 8px; 
+    background: -webkit-linear-gradient(left, rgba(182, 138, 204, 0.5), rgba(140, 176, 223, 0.5));
 }
 
 .radios {
