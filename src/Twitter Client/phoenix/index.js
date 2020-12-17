@@ -356,8 +356,8 @@ $(function() {
         }
     });
 
-    showLogin();
+    // showLogin();
 
-    // showHomePage();
+    showHomePage();
 });
 
