@@ -108,7 +108,7 @@ $(function() {
 
     function addTweetItem(id = 0, handle = '', content = '') {
         $("#tweet-id").text(id);
-        $("#tweet-list").append('<li class="tweet-item"><div class="single-tweet"><p class="tweet-author">' + '@' + handle + '</p><div class="row tweet-data-container"><p class="col-md-8 tweet-content">' + content + '</p><button id="btnretweet" class="form-control" type="button">Retweet</button></div></div></li>');
+        $("#tweet-list").append('<li class="tweet-item"><div class="single-tweet"><p class="tweet-author">' + '@' + handle + '</p><div class="row tweet-data-container"><p class="col-md-8 tweet-content">' + content + '</p><button id="btnRetweet" class="form-control" type="button">Retweet</button></div></div></li>');
         $("#btnRetweet").attr("data-tweet-id", id);
         $("#btnRetweet").attr("data-tweet-poster", handle);
 
