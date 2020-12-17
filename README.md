@@ -72,3 +72,5 @@ This project is to demonstrate the following twitter functionalities using F# ba
 <img src="./src/Screenshots/login.jpg" alt="Login"/>
 
 <img src="./src/Screenshots/signup.jpg" alt="Signup"/>
+
+<img src="./src/Screenshots/home.jpg" alt="Home Page"/>
