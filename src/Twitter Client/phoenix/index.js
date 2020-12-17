@@ -29,7 +29,15 @@ $(function() {
     }
 
     function onMessage(evt) {
-        console.log('Message from websocket - ' + evt.data);
+        const response = JSON.parse(evt.data);
+        if (response) {
+            if (response.hasOwnProperty('Content')) {
+                addTweetItem(response.Id, response.PostedBy, response.Content);
+            }
+            else if (response.hasOwnProperty('Handle')) {
+                addUserItem(response.Handle);
+            }
+        }
     }
 
     function onError(evt) {
@@ -83,7 +91,7 @@ $(function() {
         $("#fc2").text('Following - ' + fc2);
         $("#tc").text('Tweets - ' + tc);
 
-        getFeedRequest();
+        getFeedRequest(handle);
 
         isHomePageView = true;
         isLoginView = false;
@@ -97,6 +105,15 @@ $(function() {
         if (isLoginView) showSignin();
         else showLogin();
     });
+
+    function addTweetItem(id = 0, handle = '', content = '') {
+        $("#tweet-id").text(id);
+        $("#tweet-list").append('<li class="tweet-item"><div class="single-tweet"><p class="tweet-author">' + '@' + handle + '</p><div class="row tweet-data-container"><p class="col-md-8 tweet-content">' + content + '</p><button id="btnretweet" class="form-control" type="button">Retweet</button></div></div></li>');
+    }
+
+    function addUserItem(handle = '') {
+
+    }
 
     function sendLoginRequest() {
         const req = {
@@ -174,27 +191,21 @@ $(function() {
         });
     }
 
-    function getFeedRequest () {
-        const req = {
-            Handle: $("#handleip").val()
-        }
-
-        const tweets = {}
-
+    function getFeedRequest(handle = '') {
         $.ajax({
-            url: URL + 'feed/' + $("#handleip").val(),
+            url: URL + 'feed/' + handle,
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
             type: 'GET',
             dataType: 'json',
-            data: JSON.stringify(req),
+            data: JSON.stringify({}),
             success: function (result) {
-                // if(success) {
-                //     tweets =
-                // }
-                // else {
-                // }
+                if (result.Success) {
+                    
+                } else {
+                    showError("Error! Cannot Get Feed!");    
+                }
             },
             error: function () {
                 showError("Error! Cannot Get Feed!");
@@ -256,7 +267,7 @@ $(function() {
             OriginalHandle: $('#ogHandle').val(),
         }
 
-        $ajax({
+        $.ajax({
             url: URL + 'retweet',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
@@ -341,7 +352,6 @@ $(function() {
             followRequest();
             $('#followBtn').textContent = 'Follow';
         }
-
     });
 
     $("#btnRetweet").click(function(evt) {
@@ -356,8 +366,8 @@ $(function() {
         }
     });
 
-    // showLogin();
+    showLogin();
 
-    showHomePage();
+    // showHomePage();
 });
 
