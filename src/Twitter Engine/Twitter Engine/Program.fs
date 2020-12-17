@@ -33,7 +33,7 @@ let findAllMatches (text: string, regex: string, sep: string) =
     let ans = new HashSet<string>()
     let matches = Regex.Matches(text, regex)
     for m in matches do
-        ans.Add(m.Value) |> ignore
+        ans.Add(m.Value.Substring(1)) |> ignore
     ans
 
 
@@ -524,7 +524,7 @@ let app : WebPart =
                     setCORSHeaders
                     >=> choose [
                             pathScan "/feed/%s" (fun handle ->  getFeed handle)
-                            pathScan "/hashtag-tweets/%s" (fun hashtag ->   getTweetsWithHashtag ("#" + hashtag))
+                            pathScan "/hashtag-tweets/%s" (fun hashtag ->   getTweetsWithHashtag hashtag)
                             pathScan "/mention-tweets/%s" (fun handle ->    getTweetsWithMention handle)
                         ])
 
