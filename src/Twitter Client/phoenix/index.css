@@ -146,8 +146,6 @@ ul li {
     text-align: center;
     height: 40px;
     color: #555;
-    font-weight: bold;
-    font-size: 18px;
     line-height: 40px;
 }
 
@@ -180,4 +178,10 @@ ul li {
     color: #fff;
     float: right;
     height: auto;
+}
+
+.radios {
+    font-weight: 400;
+    margin-left: 5px;
+    margin-right: 5px;
 }

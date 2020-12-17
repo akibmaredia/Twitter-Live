@@ -440,16 +440,17 @@ let getTweetsWithMention handle =
     printfn "Mention tweets request: %A" handle
     let resTweets = new List<TweetData>()
     
-    let tweetIds = mentions.[handles.[handle]]
+    if mentions.ContainsKey handles.[handle] then
+        let tweetIds = mentions.[handles.[handle]]
         
-    for id in tweetIds do
-        let data: TweetData = {
-            Id = id;
-            Content = tweets.[id].Content;
-            PostedBy = users.[tweets.[id].PostedById].Handle;
-            PostedById = tweets.[id].PostedById;
-        }
-        resTweets.Add(data)
+        for id in tweetIds do
+            let data: TweetData = {
+                Id = id;
+                Content = tweets.[id].Content;
+                PostedBy = users.[tweets.[id].PostedById].Handle;
+                PostedById = tweets.[id].PostedById;
+            }
+            resTweets.Add(data)
     
     let res: TweetFeedResponse = { 
         Tweets = resTweets;

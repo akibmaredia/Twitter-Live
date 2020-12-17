@@ -202,6 +202,7 @@ $(function() {
             data: JSON.stringify({}),
             success: function (result) {
                 if (result.Success) {
+                    $('#tweet-list').empty();
                     for (var i = 0; i < result.Tweets.length; i++) {
                         var tweetObj = result.Tweets[i];
                         addTweetItem(tweetObj.Id, tweetObj.PostedBy, tweetObj.Content);
@@ -214,7 +215,33 @@ $(function() {
                 showError("Error! Cannot Get Feed!");
             }
         });
+    }
 
+    function getMentions(handle = '') {
+        $.ajax({
+            url: URL + 'mention-tweets/' + handle,
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            type: 'GET',
+            dataType: 'json',
+            data: JSON.stringify({}),
+            success: function (result) {
+                console.log(result);
+                if (result.Success) {
+                    $('#tweet-list').empty();
+                    for (var i = 0; i < result.Tweets.length; i++) {
+                        var tweetObj = result.Tweets[i];
+                        addTweetItem(tweetObj.Id, tweetObj.PostedBy, tweetObj.Content);
+                    }
+                } else {
+                    showError("Error! Cannot Get Mentions!");    
+                }
+            },
+            error: function () {
+                showError("Error! Cannot Get Mentions!");
+            }
+        });
     }
 
     function followRequest() {
@@ -366,6 +393,14 @@ $(function() {
             sendLoginRequest();
         } else {
             sendRegisterRequest();
+        }
+    });
+
+    $("#tweetradios input[name='radiotype']").click(function(){
+        if($('input:radio[name=radiotype]:checked').val() == "mention"){
+            getMentions(myHandle);
+        } else {
+            getFeedRequest(myHandle);
         }
     });
 

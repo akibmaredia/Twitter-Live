@@ -75,7 +75,6 @@
                         <div class="col-md-4 handle">
                             <p id="uname">@Username</p>
                         </div>
-                        <!-- <div class="col-md-2"></div> -->
                         <div class="col-md-2">
                             <p id="fc1">@Username</p>
                         </div>
@@ -109,7 +108,15 @@
                         </div>
                         <div style="width: 100%">
                             <div class="tweet-section">
-                                <p>Tweets</p>
+                                <div class="row">
+                                    <p class="col-md-6" style="font-weight: bold; font-size: 18px;">Tweets</p>
+                                    <div id="tweetradios" class="col-md-6">
+                                        <input type="radio" id="mention" name="radiotype" value="mention" style="font-weight: 600; font-size: 15px; margin-right: 8px;">My Mentions
+                                        <input type="radio" id="all" name="radiotype" value="all" checked="checked" style="font-weight: 600; font-size: 15px; margin-left: 8px; margin-right: 8px">All
+                                    </div>
+                                    
+                                    <!-- <button id="btnTweet" class="col-md-6 form-control" type="button">Tweet</button> -->
+                                </div>
                             </div>
                             <div style="margin-top: 80px; padding-top: 10px; border-radius: 8px; background: -webkit-linear-gradient(left, rgba(182, 138, 204, 0.5), rgba(140, 176, 223, 0.5));">
                                 <ul id="tweet-list">
