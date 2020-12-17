@@ -109,6 +109,10 @@ type TweetFeedResponse = {
     Success: bool;
 }
 
+type AddUser = {
+    Handle: string;
+}
+
 
 // Models
 type User = {
@@ -203,6 +207,15 @@ let registerUser =
             Tweets = new List<int>();
         }
         
+        let ids = new List<int>()
+        let messages = new List<string>()
+        for u in users.Values do 
+            ids.Add(u.Id);
+            let data: AddUser = { Handle = u.Handle; }
+            messages.Add(data |> JsonConvert.SerializeObject)
+            
+        Postman.Publish (ids, messages)
+
         users.Add((user.Id, user))
         users.[user.Id].FollowingTo.Add(user.Id) |> ignore
         users.[user.Id].Followers.Add(user.Id) |> ignore
