@@ -172,9 +172,6 @@ $(function() {
     }
 
     function getTweetsWithTag () {
-        const tweets = {
-        }
-
         $.ajax({
             url: URL + 'feed/' + $("#searchText").val(),
             headers: {
@@ -184,9 +181,15 @@ $(function() {
             dataType: 'json',
             data: JSON.stringify({}),
             success: function (result) {
-            },
-            error: function () {
-                showError("Error! Cannot Get Feed!");
+                if (result.Success) {
+                    $('#tweet-list').empty();
+                    for (var i = 0; i < result.Tweets.length; i++) {
+                        var tweetObj = result.Tweets[i];
+                        addTweetItem(tweetObj.Id, tweetObj.PostedBy, tweetObj.Content);
+                    }
+                } else {
+                    showError("Error! Cannot Get Feed!");
+                }
             }
         });
     }
@@ -267,10 +270,10 @@ $(function() {
         });
     }
 
-    function unfollowRequest () {
+    function unfollowRequest (unfollowHandle) {
         const req = {
             FollowerHandle: $('#handleip').val(),
-            FolloweeHandle: $('#followUser').val(),
+            FolloweeHandle: unfollowHandle,
         }
 
         $.ajax({
@@ -374,8 +377,10 @@ $(function() {
     });
 
     $("#btnFollow").click(function(evt) {
+        const followeeHandle = "aslkfj"
+
         if($('#btnFollow').textContent == 'Unfollow') {
-            unfollowRequest();
+            unfollowRequest(followeeHandle);
             $('#btnFollow').textContent = 'Follow';
         }
         else {
