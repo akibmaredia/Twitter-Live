@@ -510,7 +510,7 @@ let app : WebPart =
                     setCORSHeaders
                     >=> choose [
                             pathScan "/feed/%s" (fun handle ->  getFeed handle)
-                            pathScan "/hashtag-tweets/%s" (fun hashtag ->   getTweetsWithHashtag hashtag)
+                            pathScan "/hashtag-tweets/%s" (fun hashtag ->   getTweetsWithHashtag ("#" + hashtag))
                             pathScan "/mention-tweets/%s" (fun handle ->    getTweetsWithMention handle)
                         ])
 
